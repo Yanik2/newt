@@ -4,4 +4,5 @@ import org.newtframework.annotation.Component;
 
 @Component
 public class TestClass {
+
 }
