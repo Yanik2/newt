@@ -14,10 +14,16 @@ import org.newtframework.exception.ComponentDefinitionException;
 
 public class ComponentReader {
 
+    private final DependenciesDiscoverer dependenciesDiscoverer;
+
+    public ComponentReader() {
+        this.dependenciesDiscoverer = new DependenciesDiscoverer();
+    }
+
     public List<ComponentDefinition> initializeComponentsDefinitions(String packageName) {
         final var uri = getPackageUri(packageName);
         final var fileNames = getClassNames(Paths.get(uri), packageName);
-        return fileNames.stream()
+        final var componentDefinitions = fileNames.stream()
             .map(fileName -> {
                 try {
                     return Class.forName(fileName);
@@ -28,6 +34,9 @@ public class ComponentReader {
             .filter(c -> c.isAnnotationPresent(Component.class))
             .map(c -> new ComponentDefinition(c.getName(), c))
             .toList();
+
+        dependenciesDiscoverer.discover(componentDefinitions);
+        return componentDefinitions;
     }
 
     private List<String> getClassNames(Path path, String packageName) {

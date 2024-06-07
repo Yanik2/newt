@@ -7,8 +7,8 @@ import org.newtframework.initializer.ComponentsInitializer;
 import org.newtframework.reader.ComponentReader;
 
 public class ComponentContainer {
-    private ComponentReader componentReader;
-    private ComponentsInitializer componentsInitializer;
+    private final ComponentReader componentReader;
+    private final ComponentsInitializer componentsInitializer;
 
     private List<ComponentDefinition> componentDefinitions;
     private Map<String, Object> components;
