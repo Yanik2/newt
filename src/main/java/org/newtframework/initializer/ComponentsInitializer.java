@@ -4,7 +4,10 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.newtframework.componentdefinition.ComponentDefinition;
+import org.newtframework.exception.CircularDependencyException;
 import org.newtframework.exception.ComponentCreationException;
 
 public class ComponentsInitializer {
@@ -12,9 +15,28 @@ public class ComponentsInitializer {
     public Map<String, Object> initialize(List<ComponentDefinition> definitions) {
         final var components = new HashMap<String, Object>();
 
+        checkForCircularDependencies(definitions, 0, definitions.size());
         initialize(definitions, components);
 
         return components;
+    }
+
+    private void checkForCircularDependencies(List<ComponentDefinition> definitions, int currentDepth, int depth) {
+        if (currentDepth == depth) {
+            if (definitions.isEmpty()) {
+                return;
+            } else {
+                System.out.println("Circular dependency in: " + definitions.stream()
+                        .map(definition -> definition.getName())
+                        .collect(Collectors.joining("[", ",", "]")));
+                throw new CircularDependencyException(definitions, "Circular dependency");
+            }
+        }
+
+        for (ComponentDefinition componentDefinition : definitions) {
+            final var dependencies = componentDefinition.getDependencies();
+            checkForCircularDependencies(dependencies, currentDepth + 1, depth);
+        }
     }
 
     private void initialize(List<ComponentDefinition> definitions,
@@ -27,21 +49,21 @@ public class ComponentsInitializer {
             if (definition.getDependencies().isEmpty()) {
                 if (definition.getConstructor().getParameterCount() == 0) {
                     components.put(definition.getName(),
-                        initializeComponent(definition.getConstructor()));
+                            initializeComponent(definition.getConstructor()));
                 } else {
                     throw new ComponentCreationException(
-                        "Cannot find dependencies for bean definition: "
-                            + definition.getName() + " with constructor: " +
-                            definition.getConstructor());
+                            "Cannot find dependencies for bean definition: "
+                                    + definition.getName() + " with constructor: " +
+                                    definition.getConstructor());
                 }
             } else {
                 initialize(definition.getDependencies(), components);
                 final var dependencies = definition.getDependencies().stream()
-                    .map(dep -> components.get(dep.getName()))
-                    .toArray();
+                        .map(dep -> components.get(dep.getName()))
+                        .toArray();
 
                 components.put(definition.getName(),
-                    initializeComponent(definition.getConstructor(), dependencies));
+                        initializeComponent(definition.getConstructor(), dependencies));
             }
         }
     }
@@ -51,7 +73,7 @@ public class ComponentsInitializer {
             return constructor.newInstance(dependencies);
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error during creating component with constructor"
-                + constructor);
+                    + constructor);
         }
     }
 }
