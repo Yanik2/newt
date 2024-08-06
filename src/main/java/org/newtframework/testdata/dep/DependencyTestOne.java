@@ -1,7 +1,7 @@
-package org.newtframework.test.dep;
+package org.newtframework.testdata.dep;
 
 import org.newtframework.annotation.Component;
-import org.newtframework.test.TestClass;
+import org.newtframework.testdata.TestClass;
 
 @Component
 public class DependencyTestOne {

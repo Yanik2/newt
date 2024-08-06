@@ -1,4 +1,4 @@
-package org.newtframework.test.circular;
+package org.newtframework.testdata.circular;
 
 import org.newtframework.annotation.Component;
 

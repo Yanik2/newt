@@ -1,4 +1,4 @@
-package org.newtframework.test;
+package org.newtframework.testdata;
 
 import org.newtframework.annotation.Component;
 

@@ -1,0 +1,14 @@
+done:
+    - circular dependency
+    - component reader
+    - component initialization
+    - unique component type (by interface)
+    - unique component (by abstract class)
+    - unique component (by name)
+    - component definition make immutable
+    - name pass through annotation
+    - getBean method for container
+to do:
+    - create proxy
+    - qualifier functionality
+    - inject by name if more than one component of type present

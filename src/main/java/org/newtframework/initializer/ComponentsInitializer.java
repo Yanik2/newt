@@ -1,8 +1,8 @@
 package org.newtframework.initializer;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -12,36 +12,36 @@ import org.newtframework.exception.ComponentCreationException;
 
 public class ComponentsInitializer {
 
-    public Map<String, Object> initialize(List<ComponentDefinition> definitions) {
+    public Map<String, Object> initialize(Map<String, ComponentDefinition> definitions) {
         final var components = new HashMap<String, Object>();
 
-        checkForCircularDependencies(definitions, 0, definitions.size());
+        checkForCircularDependencies(definitions.values(), 0, definitions.size());
         initialize(definitions, components);
 
         return components;
     }
 
-    private void checkForCircularDependencies(List<ComponentDefinition> definitions, int currentDepth, int depth) {
+    private void checkForCircularDependencies(Collection<ComponentDefinition> definitions, int currentDepth, int depth) {
         if (currentDepth == depth) {
             if (definitions.isEmpty()) {
                 return;
             } else {
                 System.out.println("Circular dependency in: " + definitions.stream()
-                        .map(definition -> definition.getName())
+                        .map(ComponentDefinition::getName)
                         .collect(Collectors.joining("[", ",", "]")));
                 throw new CircularDependencyException(definitions, "Circular dependency");
             }
         }
 
         for (ComponentDefinition componentDefinition : definitions) {
-            final var dependencies = componentDefinition.getDependencies();
+            final var dependencies = componentDefinition.getDependencies().values();
             checkForCircularDependencies(dependencies, currentDepth + 1, depth);
         }
     }
 
-    private void initialize(List<ComponentDefinition> definitions,
+    private void initialize(Map<String, ComponentDefinition> definitions,
                             Map<String, Object> components) {
-        for (ComponentDefinition definition : definitions) {
+        for (ComponentDefinition definition : definitions.values()) {
             if (components.containsKey(definition.getName())) {
                 continue;
             }
@@ -58,7 +58,9 @@ public class ComponentsInitializer {
                 }
             } else {
                 initialize(definition.getDependencies(), components);
-                final var dependencies = definition.getDependencies().stream()
+                final var dependencies = definition.getDependencies()
+                    .values()
+                    .stream()
                         .map(dep -> components.get(dep.getName()))
                         .toArray();
 
@@ -72,7 +74,7 @@ public class ComponentsInitializer {
         try {
             return constructor.newInstance(dependencies);
         } catch (Exception e) {
-            throw new RuntimeException("Unexpected error during creating component with constructor"
+            throw new RuntimeException("Unexpected error during creating component with constructor "
                     + constructor);
         }
     }

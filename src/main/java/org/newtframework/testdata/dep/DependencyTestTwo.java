@@ -1,9 +1,9 @@
-package org.newtframework.test.dep;
+package org.newtframework.testdata.dep;
 
 import org.newtframework.annotation.Component;
-import org.newtframework.test.leve1.LevelOneTestClass;
-import org.newtframework.test.leve1.level2.LevelTwoTestClass;
-import org.newtframework.test.leve1.level2.level3.LevelThreeTestClass;
+import org.newtframework.testdata.leve1.LevelOneTestClass;
+import org.newtframework.testdata.leve1.level2.LevelTwoTestClass;
+import org.newtframework.testdata.leve1.level2.level3.LevelThreeTestClass;
 
 @Component
 public class DependencyTestTwo {
