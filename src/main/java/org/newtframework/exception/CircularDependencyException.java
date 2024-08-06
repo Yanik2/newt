@@ -3,8 +3,6 @@ package org.newtframework.exception;
 import java.util.Collection;
 import org.newtframework.componentdefinition.ComponentDefinition;
 
-import java.util.List;
-
 public class CircularDependencyException extends RuntimeException {
     private final Collection<ComponentDefinition> definitions;
 

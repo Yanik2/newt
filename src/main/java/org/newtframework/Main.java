@@ -1,15 +1,14 @@
 package org.newtframework;
 
-import java.lang.reflect.Type;
 import org.newtframework.container.ComponentContainer;
-import org.newtframework.testdata.annotationname.TestClass;
-import org.newtframework.testdata.unique.TypeInterface;
+import org.newtframework.testdata.proxy.ProxyInterface;
+import org.newtframework.testdata.proxy.TestProxyClass;
 
 public class Main {
     public static void main(String[] args) {
         final var container = new ComponentContainer("org.newtframework.testdata");
-        TestClass component = (TestClass) container.getComponent("Test class name");
-        TypeInterface component2 = container.getComponent(TypeInterface.class);
+        final var component = container.getComponent(ProxyInterface.class);
+        final var string = component.getString();
 
         System.out.println();
     }
